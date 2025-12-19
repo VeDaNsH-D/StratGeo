@@ -15,10 +15,37 @@ const io = new Server(server, {
 });
 
 // Initial State of the Battlefield
-let units = [
-  { id: '1', position: [0, 0, 0], color: '#4facfe', type: 'tank' }, // Blue Tank
-  { id: '2', position: [4, 0, 4], color: '#ff0844', type: 'enemy' } // Red Enemy
-];
+// Helper to create formations
+const createBattalion = () => {
+  const units = [];
+  
+  // 1. Blue Team (India - 1 Tank, 8 Soldiers)
+  units.push({ id: 'b_tank1', position: [5, 0.5, 5], color: 'blue', type: 'tank' });
+  for(let i=0; i<8; i++) {
+    units.push({ 
+      id: `b_soldier${i}`, 
+      // Arrange in a wedge formation behind the tank
+      position: [5 + (i%2===0?1:-1)*(i*0.5), 0.5, 7 + Math.floor(i/2)], 
+      color: 'blue', 
+      type: 'soldier' 
+    });
+  }
+
+  // 2. Red Team (Enemy - 1 Tank, 7 Soldiers)
+  units.push({ id: 'r_tank1', position: [-5, 0.5, -5], color: 'red', type: 'tank' });
+  for(let i=0; i<7; i++) {
+    units.push({ 
+      id: `r_soldier${i}`, 
+      position: [-5 + (i%2===0?1:-1)*(i*0.5), 0.5, -7 - Math.floor(i/2)], 
+      color: 'red', 
+      type: 'soldier' 
+    });
+  }
+  
+  return units;
+};
+
+let units = createBattalion();
 
 io.on('connection', (socket) => {
   console.log('Commander connected:', socket.id);
